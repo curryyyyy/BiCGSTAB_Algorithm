@@ -26,6 +26,12 @@
     <ClCompile Include="omp_parallelcpp.cpp" />
     <ClCompile Include="serial.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="cuda.cu">
+      <CudaRuntime Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Shared</CudaRuntime>
+      <CudaRuntime Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Shared</CudaRuntime>
+    </CudaCompile>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -62,6 +68,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.8.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -118,6 +125,10 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CudaCompile>
+      <AdditionalOptions>-allow-unsupported-compiler -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH %(AdditionalOptions)</AdditionalOptions>
+      <CodeGeneration>compute_75,sm_75</CodeGeneration>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -135,8 +146,13 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CudaCompile>
+      <AdditionalOptions>-allow-unsupported-compiler -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH %(AdditionalOptions)</AdditionalOptions>
+      <CodeGeneration>compute_75,sm_75</CodeGeneration>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.8.targets" />
   </ImportGroup>
 </Project>
