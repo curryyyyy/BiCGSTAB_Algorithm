@@ -13,9 +13,9 @@ void CSRMatrix::convertParallelCSR(const SparseMatrix& mat) {
     values.resize(nnz);
 
     // Count elements per row - parallelized
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < nnz; i++) {
-#pragma omp atomic
+    #pragma omp atomic
         row_ptr[mat.row_indices[i] + 1]++;
     }
 
@@ -92,7 +92,7 @@ std::vector<double> CSRMatrix::getDiagonalParallel() const {
 void CSRMatrix::multiplyParallel(const std::vector<double>& x, std::vector<double>& y) const {
     std::fill(y.begin(), y.end(), 0.0);
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < rows; i++) {
         double sum = 0.0;
         for (int j = row_ptr[i]; j < row_ptr[i + 1]; j++) {
@@ -108,7 +108,7 @@ namespace ParallelOps {
     double dotProduct(const std::vector<double>& a, const std::vector<double>& b) {
         double result = 0.0;
 
-#pragma omp parallel for reduction(+:result)
+        #pragma omp parallel for reduction(+:result)
         for (int i = 0; i < static_cast<int>(a.size()); i++) {
             result += a[i] * b[i];
         }

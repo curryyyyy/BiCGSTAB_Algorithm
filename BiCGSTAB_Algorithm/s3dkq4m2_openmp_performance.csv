@@ -1,2 +1,2 @@
 method,matrix_size,solver_time_ms
-hybrid_cuda,6609,30.7146
+openmp,90449,422.99

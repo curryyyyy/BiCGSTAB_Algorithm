@@ -1,2 +1,2 @@
 method,matrix_size,solver_time_ms
-hybrid_cuda,6609,30.7146
+standard_cuda,35588,29932.6

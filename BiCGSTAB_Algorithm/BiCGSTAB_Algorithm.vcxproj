@@ -127,7 +127,7 @@
     </Link>
     <CudaCompile>
       <AdditionalOptions>-allow-unsupported-compiler -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH %(AdditionalOptions)</AdditionalOptions>
-      <CodeGeneration>compute_75,sm_75</CodeGeneration>
+      <CodeGeneration>compute_52,sm_52</CodeGeneration>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
