@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     bool runParallel = true;
     bool runCuda = true;
     bool runHybridCuda = true;
-    int num_threads = 1;
+    int num_threads = 16;
     std::string matrixFile = "C:\\Users\\Kelly\\Downloads\\Dataset\\cylshell_matrix_90mb.mtx";
 
     // Parse command line arguments
