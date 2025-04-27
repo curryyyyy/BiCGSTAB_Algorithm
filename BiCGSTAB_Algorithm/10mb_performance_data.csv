@@ -1,4 +1,0 @@
-implementation,matrix_size,time_ms
-serial,6609,139.53
-openmp,6609,103.541
-cuda,6609,314.765
