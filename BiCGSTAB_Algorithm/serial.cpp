@@ -305,7 +305,7 @@ std::vector<double> biCGSTAB_Serial(const CSRMatrix& A, const std::vector<double
         double r_norm = computeNorm(r);
         rel_resid = r_norm / b_norm;
 
-        if ((iter + 1) % 50 == 0) {
+        if ((iter + 1) % 500 == 0) {
             std::cout << "Iteration " << iter + 1 << ": relative residual = "
                 << rel_resid << std::endl;
         }

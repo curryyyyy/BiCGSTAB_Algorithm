@@ -4,21 +4,90 @@
 #include <iostream>   // std::cout
 #include <fstream>    // For file export
 #include <iomanip>    // For std::setw, std::left, etc.
+#include <atomic>     // For std::atomic
+#include <thread>     // For std::thread
+
+// Global flag for non-interactive mode
+bool g_nonInteractive = true;
 
 // Handler for console close events - ensures clean output before closing
 BOOL WINAPI ConsoleHandler(DWORD dwCtrlType) {
-    if (dwCtrlType == CTRL_CLOSE_EVENT) {
+    if (dwCtrlType == CTRL_CLOSE_EVENT && !g_nonInteractive) {
         std::cout << "Console is closing. Press Enter to continue..." << std::endl;
         std::cin.get();
     }
     return FALSE;
 }
 
+// Modified readMatrixMarket function wrapper to pass the non-interactive flag
+SparseMatrix readMatrixMarketWrapper(const std::string& filename) {
+    std::ifstream file(filename);
+    SparseMatrix mat;
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        std::cerr << "Make sure the file exists in the project directory or provide a full path." << std::endl;
+
+        // In Windows, wait for user input before exiting
+        if (!g_nonInteractive) {
+            std::cout << "Press Enter to exit..." << std::endl;
+            std::cin.get();
+        }
+        exit(1);
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        if (line[0] != '%') break;
+    }
+
+    std::stringstream header(line);
+    header >> mat.rows >> mat.cols >> mat.nnz;
+
+    // Check if matrix size is reasonable before allocating memory
+    size_t estimatedMemory = sizeof(double) * mat.rows * mat.cols;
+    if (estimatedMemory > 1024 * 1024 * 1024) {  // More than 1 GB
+        std::cout << "Warning: Converting to dense would require approximately "
+            << (estimatedMemory / (1024.0 * 1024.0)) << " MB of memory." << std::endl;
+
+        if (!g_nonInteractive) {
+            std::cout << "Do you want to continue? (y/n): ";
+            char response;
+            std::cin >> response;
+            if (response != 'y' && response != 'Y') {
+                std::cout << "Operation cancelled by user." << std::endl;
+
+                // In Windows, wait for user input before exiting
+                std::cout << "Press Enter to exit..." << std::endl;
+                std::cin.get(); // Clear the newline
+                std::cin.get();
+                exit(0);
+            }
+        }
+        else {
+            // In non-interactive mode, just proceed with a warning
+            std::cout << "Proceeding with large matrix in non-interactive mode." << std::endl;
+        }
+    }
+
+    mat.row_indices.resize(mat.nnz);
+    mat.col_indices.resize(mat.nnz);
+    mat.values.resize(mat.nnz);
+
+    for (int i = 0; i < mat.nnz; ++i) {
+        int r, c;
+        double val;
+        file >> r >> c >> val;
+        mat.row_indices[i] = r - 1; // Matrix Market is 1-based
+        mat.col_indices[i] = c - 1;
+        mat.values[i] = val;
+    }
+
+    return mat;
+}
+
 // Main function
 int main(int argc, char* argv[]) {
-    // Set up console close handler
-    SetConsoleCtrlHandler(ConsoleHandler, TRUE);
-
     // Default settings
     bool runSerial = true;
     bool runParallel = true;
@@ -65,6 +134,9 @@ int main(int argc, char* argv[]) {
             matrixFile = argv[i + 1];
             i++;
         }
+        else if (arg == "--non-interactive" || arg == "-q") {
+            g_nonInteractive = true;
+        }
         else if (arg == "--help") {
             std::cout << "Usage: " << argv[0] << " [options]\n"
                 << "Options:\n"
@@ -76,13 +148,20 @@ int main(int argc, char* argv[]) {
                 << "  --no-hybrid         Don't run the hybrid CUDA version\n"
                 << "  --threads N         Set number of threads for parallel version (default: max available)\n"
                 << "  --matrix FILE       Specify matrix market file to use (default: s3dkt3m2.mtx)\n"
+                << "  --non-interactive   Run without waiting for user input (batch mode)\n"
+                << "  -q                  Same as --non-interactive\n"
                 << "  --help              Display this help message\n";
 
-            std::cout << "\nPress Enter to exit..." << std::endl;
-            std::cin.get();
+            if (!g_nonInteractive) {
+                std::cout << "\nPress Enter to exit..." << std::endl;
+                std::cin.get();
+            }
             return 0;
         }
     }
+
+    // Set up console close handler
+    SetConsoleCtrlHandler(ConsoleHandler, TRUE);
 
     // Set number of threads for OpenMP
 #ifdef _OPENMP
@@ -122,7 +201,7 @@ int main(int argc, char* argv[]) {
         // Serial file reading - used for ALL implementations
         std::cout << "Reading matrix file (serial): " << matrixFile << std::endl;
         auto startFileRead = std::chrono::high_resolution_clock::now();
-        sparseMatrix = readMatrixMarket(matrixFile);
+        sparseMatrix = readMatrixMarketWrapper(matrixFile);
         auto endFileRead = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> durationFileRead = endFileRead - startFileRead;
         double fileReadTime = durationFileRead.count();
@@ -722,9 +801,10 @@ int main(int argc, char* argv[]) {
         std::cerr << "Unknown error occurred!" << std::endl;
     }
 
-    // Keep console window open when running from Visual Studio
-    std::cout << "\nPress Enter to exit..." << std::endl;
-    std::cin.get();
-
+    // Keep console window open when running from Visual Studio, but only in interactive mode
+    if (!g_nonInteractive) {
+        std::cout << "\nPress Enter to exit..." << std::endl;
+        std::cin.get();
+    }
     return 0;
 }

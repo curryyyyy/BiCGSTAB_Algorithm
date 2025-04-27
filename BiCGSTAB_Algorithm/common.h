@@ -14,6 +14,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+extern bool g_nonInteractive;
 
 // Forward declarations for solver functions
 struct SparseMatrix;
@@ -105,7 +106,7 @@ inline SparseMatrix readMatrixMarket(const std::string& filename) {
 
     // Check if matrix size is reasonable before allocating memory
     size_t estimatedMemory = sizeof(double) * mat.rows * mat.cols;
-    if (estimatedMemory > 1024 * 1024 * 1024) {  // More than 1 GB
+    if (estimatedMemory > 1024 * 1024 * 1024 && !g_nonInteractive) {  // More than 1 GB
         std::cout << "Warning: Converting to dense would require approximately "
             << (estimatedMemory / (1024.0 * 1024.0)) << " MB of memory." << std::endl;
         std::cout << "Do you want to continue? (y/n): ";
@@ -113,8 +114,6 @@ inline SparseMatrix readMatrixMarket(const std::string& filename) {
         std::cin >> response;
         if (response != 'y' && response != 'Y') {
             std::cout << "Operation cancelled by user." << std::endl;
-
-            // In Windows, wait for user input before exiting
             std::cout << "Press Enter to exit..." << std::endl;
             std::cin.get(); // Clear the newline
             std::cin.get();
@@ -163,20 +162,29 @@ inline SparseMatrix readMatrixMarketParallel(const std::string& filename) {
     std::stringstream header(line);
     header >> mat.rows >> mat.cols >> mat.nnz;
 
-    // Check if matrix size is reasonable
+    // Modify the memory check section:
     size_t estimatedMemory = sizeof(double) * mat.rows * mat.cols;
     if (estimatedMemory > 1024 * 1024 * 1024) {  // More than 1 GB
         std::cout << "Warning: Converting to dense would require approximately "
             << (estimatedMemory / (1024.0 * 1024.0)) << " MB of memory." << std::endl;
-        std::cout << "Do you want to continue? (y/n): ";
-        char response;
-        std::cin >> response;
-        if (response != 'y' && response != 'Y') {
-            std::cout << "Operation cancelled by user." << std::endl;
-            std::cout << "Press Enter to exit..." << std::endl;
-            std::cin.get(); // Clear the newline
-            std::cin.get();
-            exit(0);
+
+        if (!g_nonInteractive) {
+            std::cout << "Do you want to continue? (y/n): ";
+            char response;
+            std::cin >> response;
+            if (response != 'y' && response != 'Y') {
+                std::cout << "Operation cancelled by user." << std::endl;
+                if (!g_nonInteractive) {
+                    std::cout << "Press Enter to exit..." << std::endl;
+                    std::cin.get(); // Clear the newline
+                    std::cin.get();
+                }
+                exit(0);
+            }
+        }
+        else {
+            // In non-interactive mode, we'll proceed but log a warning
+            std::cout << "Proceeding with large matrix in non-interactive mode." << std::endl;
         }
     }
 

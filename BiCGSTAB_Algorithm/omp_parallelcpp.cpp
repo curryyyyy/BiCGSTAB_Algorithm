@@ -27,7 +27,7 @@ void CSRMatrix::convertParallelCSR(const SparseMatrix& mat) {
 
     // REPLACE THIS ENTIRE BLOCK:
     // Need thread-safe insertion into COL and values arrays
-    // std::vector<int> row_counts(rows, 0);
+    //std::vector<int> row_counts(rows, 0);
     // This cannot be safely parallelized without more complex code
     // for (int i = 0; i < nnz; i++) {
     //     int row = mat.row_indices[i];
@@ -314,7 +314,7 @@ std::vector<double> biCGSTAB_Parallel(const CSRMatrix& A, const std::vector<doub
         double r_norm = computeNorm(r);
         rel_resid = r_norm / b_norm;
 
-        if ((iter + 1) % 50 == 0) {
+        if ((iter + 1) % 500 == 0) {
             std::cout << "Iteration " << iter + 1 << ": relative residual = "
                 << rel_resid << std::endl;
         }
