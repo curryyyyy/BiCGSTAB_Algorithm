@@ -1,5 +1,0 @@
-method,matrix_size,solver_time_ms
-serial,6609,73.4061
-openmp,6609,23.4392
-standard_cuda,6609,220.062
-hybrid_cuda,6609,29.9253
