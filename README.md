@@ -22,3 +22,10 @@ python bicgstab_runner.py -e ./your_executable -d ./matrices -i serial parallel 
 
 # Just generate visualizations from existing results
 python bicgstab_runner.py --visualize-only -r existing_results.csv
+
+# Run all datasets together to see all the performance visualizations
+python kVer_run_script.py --executable path/to/your/executable \
+                          --matrix-dir "C:\Users\Kelly\Downloads\Dataset" \
+                          --implementations all \
+                          --threads 4 8 16 \
+                          --output bicgstab_results
