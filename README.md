@@ -13,7 +13,7 @@ Click Apply and Ok
 3. Enable OpenMP
 Project properties > C/C++ > Language > Enable Open MP Support
 
-Command to run python script:
+# Command to run python script:
 # Run tests with all implementations on a single matrix
 python bicgstab_runner.py -e ./your_executable -m matrix_file.mtx
 
