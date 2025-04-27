@@ -1,4 +1,4 @@
-Before run the code:
+# Before run the code:
 1. Set thread size
 Project properties > Configuration properties > Debugging > Command Arguments 
 Enter : --threads 16
