@@ -28,7 +28,7 @@ pip install tabulate
 
 
 # Run tests with interactive mode
-python updated-script-with-output.py --exe "C:\Users\Acer\source\repos\BiCGSTAB_Algorithm\x64\Debug\BiCGSTAB_Algorithm.exe" --datasets-dir "C:\Users\Acer\Datasets" --threads 16 --output-dir bicgstab_results --interactive 
+python updated-script-with-output.py --exe [exe path] --datasets-dir [dataset folder] --threads 16 --output-dir bicgstab_results --interactive 
 
 # Run all datasets together to see all the performance visualizations
-ppython updated-script-with-output.py --exe "C:\Users\Acer\source\repos\BiCGSTAB_Algorithm\x64\Debug\BiCGSTAB_Algorithm.exe" --datasets-dir "C:\Users\Acer\Downloads\20Datasets" --threads 16 --output-dir bicgstab_results
+ppython updated-script-with-output.py --exe [exe path] --datasets-dir [dataset folder] --threads 16 --output-dir bicgstab_results
