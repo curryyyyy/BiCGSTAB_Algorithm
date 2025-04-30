@@ -21,7 +21,9 @@ Project properties > C/C++ > Language > Enable Open MP Support
 
 # Command to run python script:
 pip install pandas
+
 pip install matplotlib 
+
 pip install tabulate
 
 
