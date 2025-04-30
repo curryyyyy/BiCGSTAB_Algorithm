@@ -1,3 +1,8 @@
+# Download datasets
+pip install gdown
+gdown --folder https://drive.google.com/drive/folders/1vwDd_2Uz6I7eIDbZ-SVv46BAyHgwdxbc
+
+
 # Before run the code:
 1. Set thread size
 Project properties > Configuration properties > Debugging > Command Arguments 
