@@ -31,4 +31,4 @@ pip install tabulate
 python updated-script-with-output.py --exe [exe path] --datasets-dir [dataset folder] --threads 16 --output-dir bicgstab_results --interactive 
 
 # Run all datasets together to see all the performance visualizations
-ppython updated-script-with-output.py --exe [exe path] --datasets-dir [dataset folder] --threads 16 --output-dir bicgstab_results
+python updated-script-with-output.py --exe [exe path] --datasets-dir [dataset folder] --threads 16 --output-dir bicgstab_results
